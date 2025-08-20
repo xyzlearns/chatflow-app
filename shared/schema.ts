@@ -31,13 +31,11 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email").unique(),
-  phoneNumber: varchar("phone_number").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   password: varchar("password"), // hashed password for email/password auth
   emailVerified: boolean("email_verified").default(false),
-  phoneVerified: boolean("phone_verified").default(false),
   isOnline: boolean("is_online").default(false),
   lastSeen: timestamp("last_seen").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
@@ -48,7 +46,7 @@ export const users = pgTable("users", {
 export const authProviders = pgTable("auth_providers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  provider: varchar("provider").notNull(), // 'replit', 'google', 'email', 'phone'
+  provider: varchar("provider").notNull(), // 'replit', 'google', 'email', 'firebase'
   providerId: varchar("provider_id").notNull(), // external provider user ID
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
@@ -75,16 +73,6 @@ export const emailVerificationTokens = pgTable("email_verification_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Phone verification tokens table
-export const phoneVerificationTokens = pgTable("phone_verification_tokens", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  code: varchar("code").notNull(),
-  phoneNumber: varchar("phone_number").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  used: boolean("used").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
 
 export const conversations = pgTable("conversations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -133,7 +121,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   authProviders: many(authProviders),
   passwordResetTokens: many(passwordResetTokens),
   emailVerificationTokens: many(emailVerificationTokens),
-  phoneVerificationTokens: many(phoneVerificationTokens),
 }));
 
 export const authProvidersRelations = relations(authProviders, ({ one }) => ({
@@ -157,12 +144,6 @@ export const emailVerificationTokensRelations = relations(emailVerificationToken
   }),
 }));
 
-export const phoneVerificationTokensRelations = relations(phoneVerificationTokens, ({ one }) => ({
-  user: one(users, {
-    fields: [phoneVerificationTokens.userId],
-    references: [users.id],
-  }),
-}));
 
 export const conversationsRelations = relations(conversations, ({ many }) => ({
   participants: many(conversationParticipants),
@@ -225,10 +206,6 @@ export const insertEmailVerificationTokenSchema = createInsertSchema(emailVerifi
   createdAt: true,
 });
 
-export const insertPhoneVerificationTokenSchema = createInsertSchema(phoneVerificationTokens).omit({
-  id: true,
-  createdAt: true,
-});
 
 export const insertConversationSchema = createInsertSchema(conversations).omit({
   id: true,
@@ -265,11 +242,6 @@ export const emailLoginSchema = z.object({
   password: z.string(),
 });
 
-export const phoneSignupSchema = z.object({
-  phoneNumber: z.string(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-});
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -289,8 +261,6 @@ export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
 export type EmailVerificationToken = typeof emailVerificationTokens.$inferSelect;
 export type InsertEmailVerificationToken = z.infer<typeof insertEmailVerificationTokenSchema>;
-export type PhoneVerificationToken = typeof phoneVerificationTokens.$inferSelect;
-export type InsertPhoneVerificationToken = z.infer<typeof insertPhoneVerificationTokenSchema>;
 export type Conversation = typeof conversations.$inferSelect;
 export type InsertConversation = z.infer<typeof insertConversationSchema>;
 export type ConversationParticipant = typeof conversationParticipants.$inferSelect;
@@ -303,6 +273,5 @@ export type InsertTypingStatus = z.infer<typeof insertTypingStatusSchema>;
 // Auth-specific types
 export type EmailSignup = z.infer<typeof emailSignupSchema>;
 export type EmailLogin = z.infer<typeof emailLoginSchema>;
-export type PhoneSignup = z.infer<typeof phoneSignupSchema>;
 export type ForgotPassword = z.infer<typeof forgotPasswordSchema>;
 export type ResetPassword = z.infer<typeof resetPasswordSchema>;
