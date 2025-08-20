@@ -10,7 +10,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { FileUpload } from '@/components/ui/file-upload';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import type { Message, User, Conversation } from '@shared/schema';
+import type { Message, User, Conversation } from '@/types/schema';
 
 interface ChatWindowProps {
   conversationId: string;

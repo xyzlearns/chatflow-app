@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { Check, CheckCheck, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { Message, User } from '@shared/schema';
+import type { Message, User } from '@/types/schema';
 
 interface MessageBubbleProps {
   message: Message & { sender: User };

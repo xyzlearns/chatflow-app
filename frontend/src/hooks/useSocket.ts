@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useAuth } from './useAuth';
-import type { User } from '@shared/schema';
+import type { User } from '@/types/schema';
 
 interface SocketMessage {
   type: string;

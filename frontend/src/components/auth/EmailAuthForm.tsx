@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { emailSignupSchema, emailLoginSchema } from '@shared/schema';
-import type { EmailSignup, EmailLogin } from '@shared/schema';
+import { emailSignupSchema, emailLoginSchema } from '@/types/schema';
+import type { EmailSignup, EmailLogin } from '@/types/schema';
 import { Eye, EyeOff } from 'lucide-react';
 
 export function EmailAuthForm() {

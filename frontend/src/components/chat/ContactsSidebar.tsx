@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { TypingIndicator } from './TypingIndicator';
-import type { Conversation, Message, User, ConversationParticipant } from '@shared/schema';
+import type { Conversation, Message, User, ConversationParticipant } from '@/types/schema';
 
 interface ConversationWithDetails extends Conversation {
   participants: Array<ConversationParticipant & { user: User }>;
