@@ -13,7 +13,6 @@ import {
   insertConversationParticipantSchema,
   emailSignupSchema,
   emailLoginSchema,
-  phoneSignupSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "@shared/schema";
